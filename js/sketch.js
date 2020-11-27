@@ -1,7 +1,7 @@
 let player;
 let FOV = 360;
 let prevFOV = FOV;
-let rays = [];
+
 
 let rotateSlider, stepSlider;
 
@@ -41,12 +41,15 @@ function draw() {
 
 
 
-function setFOV(player, FOV) {
-    prevFOV = FOV;
-    rays = [];
-    for (let angle = -FOV/2; angle < FOV/2; angle += 1) {
-      rays.push(new Ray(player.pos, player.rot + radians(angle)));
+function setFOV(player, newFOV) {
+    if (FOV !== newFOV) {
+      rays = [];
+      for (let angle = -newFOV/2; angle < newFOV/2; angle += 1) {
+        rays.push(new Ray(player.pos, player.dir + radians(angle)));
+      }
+      FOV = newFOV;
     }
+
 }
 
 function getKeyInputs() {
