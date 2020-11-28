@@ -1,6 +1,9 @@
 let player;
 let FOV = 360;
 let prevFOV = FOV;
+let rayLength = 50;
+
+let walls = [];
 
 
 let rotateSlider, stepSlider;
@@ -21,11 +24,16 @@ function setup() {
   fovSlider.parent("canvas1");
   fovSlider.style('width', '80px');
 
+  rayLengthSlider = createSlider(1, 500, 190, 10);
+  rayLengthSlider.parent("canvas1");
+  rayLengthSlider.style('width', '80px');
+
   player = new Player(width/2, height/2, 0);
-  setFOV(player, 100);
 
 
-  wall = new Boundary(width-width/3, height-height/3, PI/2, 200);
+  walls.push(new Boundary(width-width/3, height/3, 200, -PI/2));
+  // walls.push(new Boundary(width-width/4, height/3, 200, -PI/3));
+  // walls.push(new Boundary(width-width/5, height/3, 200, -PI/4));
 }
 
 function draw() {
@@ -33,7 +41,17 @@ function draw() {
   getKeyInputs();
 
   player.show();
-  wall.show();
+  // player.isIntersecting();
+  for (let wall of walls) {
+    wall.show();
+
+    // stroke(255);
+    // strokeWeight(5);
+    // line(player.pos.x, player.pos.y, wall.pos.x, wall.pos.y);
+    // line(player.pos.x, player.pos.y, wall.pos2.x, wall.pos2.y);
+  }
+
+  // walls[0].setAngle(walls[0].rotation += radians(1));
 }
 
 
@@ -41,23 +59,23 @@ function draw() {
 
 
 
-function setFOV(player, newFOV) {
-    if (FOV !== newFOV) {
-      rays = [];
-      for (let angle = -newFOV/2; angle < newFOV/2; angle += 1) {
-        rays.push(new Ray(player.pos, player.dir + radians(angle)));
-      }
-      FOV = newFOV;
-    }
-
-}
+// function setFOV(newFOV) {
+//     if (FOV !== newFOV) {
+//       rays = [];
+//       for (let angle = -newFOV/2; angle < newFOV/2; angle += 1) {
+//         rays.push(new Ray(player.pos, player.rotation + radians(angle)));
+//       }
+//       FOV = newFOV;
+//     }
+// }
 
 function getKeyInputs() {
   // console.log(fovSlider.value());
-  setFOV(player, fovSlider.value());
+  player.setFOV(fovSlider.value());
   // console.log(prevFOV, FOV);
   let rotStep = rotateSlider.value();
   let step = stepSlider.value();
+  rayLength = rayLengthSlider.value();
 
   if (keyIsDown(LEFT_ARROW)) {
     player.rotate(-rotStep);
