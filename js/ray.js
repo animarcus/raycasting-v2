@@ -7,6 +7,8 @@ class Ray {
 
     this.unitV = p5.Vector.fromAngle(this.rotation);
     this.unitV.setMag(rayLength);
+
+    this.intersections = [];
   }
 
   show() {
@@ -55,22 +57,37 @@ class Ray {
     this.intersecting = false;
     if (den !== 0) {
       // console.log(this.rotation);
-      if (u >= 0 && u <= 1) {
+      // if (u >= 0 && u <= 1) {
         let xint = x3 + u*(x4 - x3);
         let yint = y3 + u*(y4 - y3);
 
-        if ((xint > x1 && xint < x2) || (xint < x1 && xint > x2)) {
-          this.intersecting = true;
+        // let xint = x1 + t*(x2 - x1);
+        // let yint = y1 + t*(y2 - y1);
+
+        if ((xint > x1 && xint < x2) || (xint < x1 && xint > x2) &&
+            (yint > y1 && yint < y2) || (yint < y1 && yint > y2)) {
+          // this.intersecting = true;
           push();
           stroke(color("green"));
           strokeWeight(5);
           point(xint, yint);
           pop();
         }
-      }
+      // }
     }
+    return null;
   }
 }
+
+
+
+// const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) /
+//             ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
+
+// const x = x1 + ua * (x2 - x1);
+// const y = y1 + ua * (y2 - y1);
+
+// return [x, y]
 
 
 // class Ray {

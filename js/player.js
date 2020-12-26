@@ -8,11 +8,11 @@ class Player {
 
     this.rays = [];
 
-    // this.rays.push(new Ray(this.pos, this.rotation));
+    this.rays.push(new Ray(this.pos, this.rotation));
 
-    for (let angle = -FOV/2; angle < FOV/2; angle += 0.5) {
-      this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
-    }
+    // for (let angle = -FOV/2; angle < FOV/2; angle += 0.5) {
+    //   this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
+    // }
   }
 
   show() {
@@ -27,17 +27,21 @@ class Player {
     pop();
 
     for (let ray of this.rays) {
+      for (let wall of walls) {
+        let cross = ray.cast(wall);
+        if (cross) {
+          ray.intersections.push(cross);
+        }
+      }
+      if (ray.intersections.length > 1) {
+        console.log("bork longer");
+      }
+
       ray.show();
+      ray.intersections = [];
     }
   }
 
-  castRays() {
-    for (let wall of walls) {
-      for (let ray of this.rays) {
-        ray.cast(wall);
-      }
-    }
-  }
 
   setAngle(angle) { // has to be in radians
     this.rotation = angle;

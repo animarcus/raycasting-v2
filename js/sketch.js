@@ -31,7 +31,7 @@ function setup() {
   player = new Player(width/2, height/2, 0);
 
 
-  walls.push(new Boundary(width-width/3, height/3, 200, -PI/2));
+  walls.push(new Boundary(width-width/3, height/3, 200, -PI/3));
   // walls.push(new Boundary(width-width/4, height/3, 200, -PI/3));
   // walls.push(new Boundary(width-width/5, height/3, 200, -PI/4));
 }
@@ -39,7 +39,7 @@ function setup() {
 function draw() {
   background(0);
   getKeyInputs();
-  player.castRays();
+  // player.castRays();
   player.show();
 
   for (let wall of walls) {
@@ -56,7 +56,7 @@ function draw() {
 
 function getKeyInputs() {
   // console.log(fovSlider.value());
-  player.setFOV(fovSlider.value());
+  // player.setFOV(fovSlider.value());
   // console.log(prevFOV, FOV);
   let rotStep = rotateSlider.value();
   let step = stepSlider.value();
