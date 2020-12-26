@@ -7,7 +7,7 @@ class Boundary {
     this.length = len;
 
     this.pos = createVector(this.x, this.y);
-    this.setAngle(-this.rotation);
+    this.pos2 = this.setAngle(-this.rotation);
   }
   show() {
     push();
@@ -24,6 +24,6 @@ class Boundary {
     angle = -angle;
     this.unitV = p5.Vector.fromAngle(angle);
     this.unitV.setMag(this.length);
-    this.pos2 = p5.Vector.add(this.pos, this.unitV);
+    return p5.Vector.add(this.pos, this.unitV);
   }
 }

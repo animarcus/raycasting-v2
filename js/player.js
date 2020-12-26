@@ -7,36 +7,37 @@ class Player {
     this.unitV.setMag(50);
 
     this.rays = [];
-    for (let angle = -FOV/2; angle < FOV/2; angle += 1) {
+
+    // this.rays.push(new Ray(this.pos, this.rotation));
+
+    for (let angle = -FOV/2; angle < FOV/2; angle += 0.5) {
       this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
     }
   }
 
   show() {
-    drawArrow(this.pos, this.unitV, "white");
-    // push();
-    // translate(this.pos.x, this.pos.y);
-    // stroke(255);
-    // strokeWeight(5);
-    // point(0,0);
-    // strokeWeight(1);
-    // line(0,0, this.unitV.x, this.unitV.y);
-    // pop();
+    // drawArrow(this.pos, this.unitV, "white");
+    push();
+    translate(this.pos.x, this.pos.y);
+    stroke(255);
+    strokeWeight(5);
+    point(0,0);
+    strokeWeight(1);
+    line(0,0, this.unitV.x, this.unitV.y);
+    pop();
 
     for (let ray of this.rays) {
       ray.show();
     }
   }
 
-  isIntersecting() {
-    // for (let ray of this.rays) {
-    //   for (let wall of walls) {
-    //   }
-    // }
+  castRays() {
+    for (let wall of walls) {
+      for (let ray of this.rays) {
+        ray.cast(wall);
+      }
+    }
   }
-
-  // r = √ ( x2 + y2 )
-  // θ = tan-1 ( y / x )
 
   setAngle(angle) { // has to be in radians
     this.rotation = angle;

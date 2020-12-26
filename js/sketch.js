@@ -1,7 +1,7 @@
 let player;
-let FOV = 360;
+let FOV = 0;
 let prevFOV = FOV;
-let rayLength = 50;
+let rayLength = 1000;
 
 let walls = [];
 
@@ -39,9 +39,9 @@ function setup() {
 function draw() {
   background(0);
   getKeyInputs();
-
+  player.castRays();
   player.show();
-  // player.isIntersecting();
+
   for (let wall of walls) {
     wall.show();
 
@@ -54,28 +54,13 @@ function draw() {
   // walls[0].setAngle(walls[0].rotation += radians(1));
 }
 
-
-
-
-
-
-// function setFOV(newFOV) {
-//     if (FOV !== newFOV) {
-//       rays = [];
-//       for (let angle = -newFOV/2; angle < newFOV/2; angle += 1) {
-//         rays.push(new Ray(player.pos, player.rotation + radians(angle)));
-//       }
-//       FOV = newFOV;
-//     }
-// }
-
 function getKeyInputs() {
   // console.log(fovSlider.value());
   player.setFOV(fovSlider.value());
   // console.log(prevFOV, FOV);
   let rotStep = rotateSlider.value();
   let step = stepSlider.value();
-  rayLength = rayLengthSlider.value();
+  // rayLength = rayLengthSlider.value();
 
   if (keyIsDown(LEFT_ARROW)) {
     player.rotate(-rotStep);
