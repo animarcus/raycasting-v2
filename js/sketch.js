@@ -5,6 +5,10 @@ let rayLength = 1000;
 
 let walls = [];
 
+let isDrawing = false;
+let p1;
+
+
 
 let rotateSlider, stepSlider;
 
@@ -24,40 +28,41 @@ function setup() {
   fovSlider.parent("canvas1");
   fovSlider.style('width', '80px');
 
-  rayLengthSlider = createSlider(1, 500, 190, 10);
-  rayLengthSlider.parent("canvas1");
-  rayLengthSlider.style('width', '80px');
+  // rayLengthSlider = createSlider(1, 500, 190, 10);
+  // rayLengthSlider.parent("canvas1");
+  // rayLengthSlider.style('width', '80px');
 
   player = new Player(width/2, height/2, 0);
 
 
-  walls.push(new Boundary(width-width/3, height/3, 200, -PI/3));
-  // walls.push(new Boundary(width-width/4, height/3, 200, -PI/3));
-  // walls.push(new Boundary(width-width/5, height/3, 200, -PI/4));
+  // walls.push(new Boundary(width-width/3, height/3, width-width/3, height/2));
+  // walls.push(new Boundary(width-width/4, height/3, ));
+  // walls.push(new Boundary(width-width/5, height/3, ));
 }
 
 function draw() {
   background(0);
   getKeyInputs();
-  // player.castRays();
   player.show();
 
   for (let wall of walls) {
     wall.show();
-
-    // stroke(255);
-    // strokeWeight(5);
-    // line(player.pos.x, player.pos.y, wall.pos.x, wall.pos.y);
-    // line(player.pos.x, player.pos.y, wall.pos2.x, wall.pos2.y);
   }
 
-  // walls[0].setAngle(walls[0].rotation += radians(1));
+  if (!isDrawing) {
+    p1 = [mouseX, mouseY];
+  }
+  if (mouseIsPressed) {
+    isDrawing = true;
+    stroke(255);
+    line(p1[0],p1[1], mouseX, mouseY);
+  }
+
+  // walls[0].setAngle(walls[0].rotsation += radians(1));
 }
 
 function getKeyInputs() {
-  // console.log(fovSlider.value());
-  // player.setFOV(fovSlider.value());
-  // console.log(prevFOV, FOV);
+  player.setFOV(fovSlider.value());
   let rotStep = rotateSlider.value();
   let step = stepSlider.value();
   // rayLength = rayLengthSlider.value();
@@ -84,4 +89,14 @@ function getKeyInputs() {
 
 function mouseReleased() {
   document.activeElement.blur();
+  // console.log(isDrawing);
+  if (isDrawing) {
+    isDrawing = false;
+    walls.push(new Boundary(p1[0], p1[1], mouseX, mouseY));
+    if (abs(walls[walls.length - 1].length) < 5) {
+      walls.pop();
+    }
+  }
 }
+
+

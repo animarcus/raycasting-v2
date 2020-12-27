@@ -48,44 +48,34 @@ class Ray {
     let x4 = x3 + wall.unitV.x;
     let y4 = y3 + wall.unitV.y;
 
-    let den = (x1 - x2)*(y3-y4)-(y1-y3)*(x3-x4);
-    let t = (x1 - x3)*(y3 - y4)*(y1 - y3)*(x3 - x4);
-    let u = (x1 - x2)*(y1 - y3) - (y1 - y2)*(x1 - x3);
+    const den = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
 
-    u = -u/den;
-    t = t/den;
     this.intersecting = false;
     if (den !== 0) {
-      // console.log(this.rotation);
-      // if (u >= 0 && u <= 1) {
-        let xint = x3 + u*(x4 - x3);
-        let yint = y3 + u*(y4 - y3);
-
-        // let xint = x1 + t*(x2 - x1);
-        // let yint = y1 + t*(y2 - y1);
-
-        if ((xint > x1 && xint < x2) || (xint < x1 && xint > x2) &&
-            (yint > y1 && yint < y2) || (yint < y1 && yint > y2)) {
-          // this.intersecting = true;
+      const ua = ((x1-x3)*(y3-y4)-(y1-y3)*(x3-x4)) / den;
+      if (ua >= 0 && ua <= 1) {
+        const xint = x1 + ua * (x2 - x1);
+        const yint = y1 + ua * (y2 - y1);
+        if ((((xint > x3) && (xint < x4)) || ((xint > x4) && (xint < x3))) &&
+            (((yint > y3) && (yint < y4)) || ((yint > y4) && (yint < y3)))) {
           push();
-          stroke(color("green"));
+          stroke(color("red"));
           strokeWeight(5);
           point(xint, yint);
+          strokeWeight(0.5);
+          line(xint, yint, x1, y1);
           pop();
         }
-      // }
+      }
     }
     return null;
   }
 }
 
-
-
 // const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) /
 //             ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
 
-// const x = x1 + ua * (x2 - x1);
-// const y = y1 + ua * (y2 - y1);
+
 
 // return [x, y]
 

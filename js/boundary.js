@@ -1,10 +1,20 @@
 class Boundary {
-  constructor(x, y, len = 50, rotation = 0) {
+  constructor(x, y, x2, y2) {
     this.x = x;
     this.y = y;
+    this.x2 = x2;
+    this.y2 = y2;
 
-    this.rotation = -rotation;
-    this.length = len;
+
+    this.length = sqrt(sq(x2 - x) + sq(y2 - y));
+    if (x2 < x) {
+      this.length = -this.length;
+    }
+    this.rotation = atan((y2 - y)/(x2 - x));
+
+    // console.log(x, y, x2, y2);
+    // console.log(this.length, this.rotation);
+
 
     this.pos = createVector(this.x, this.y);
     this.pos2 = this.setAngle(-this.rotation);

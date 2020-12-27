@@ -8,11 +8,11 @@ class Player {
 
     this.rays = [];
 
-    this.rays.push(new Ray(this.pos, this.rotation));
+    // this.rays.push(new Ray(this.pos, this.rotation));
 
-    // for (let angle = -FOV/2; angle < FOV/2; angle += 0.5) {
-    //   this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
-    // }
+    for (let angle = -FOV/2; angle < FOV/2; angle += 0.5) {
+      this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
+    }
   }
 
   show() {
