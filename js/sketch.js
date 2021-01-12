@@ -1,19 +1,22 @@
 let player;
-let FOV = 0;
-let prevFOV = FOV;
-let rayLength = 1000;
+let rayLength = 500;
+let rotStep;
+let step;
 
 let walls = [];
+let deleted = [];
 
+let undoTime = 0;
+let redoTime = 0;
 let isDrawing = false;
-let p1;
+let p1 = {};
 
 
 
 let rotateSlider, stepSlider;
 
 function setup() {
-  let canvas = createCanvas(600, 600);
+  let canvas = createCanvas(900, 400);
   canvas.parent("canvas1");
 
   rotateSlider = createSlider(1, 9, 3, 0.5);
@@ -24,7 +27,7 @@ function setup() {
   stepSlider.parent("canvas1");
   stepSlider.style('width', '80px');
 
-  fovSlider = createSlider(2, 365, 120, 5);
+  fovSlider = createSlider(2, 365, 1, 5);
   fovSlider.parent("canvas1");
   fovSlider.style('width', '80px');
 
@@ -34,39 +37,48 @@ function setup() {
 
   player = new Player(width/2, height/2, 0);
 
+  // walls.push(new Boundary(width-width/3, height/2-50, width-width/2, height/2+50));
 
-  // walls.push(new Boundary(width-width/3, height/3, width-width/3, height/2));
-  // walls.push(new Boundary(width-width/4, height/3, ));
-  // walls.push(new Boundary(width-width/5, height/3, ));
+  // walls.push(new Boundary(width/3, height/3, width - width/3, height/3));
+  // walls.push(new Boundary(width - width/3, height/3, width - width/3, height - height/3));
+  // walls.push(new Boundary(width/3, height - height/3, width - width/3, height - height/3));
+  // walls.push(new Boundary(width/3, height - height/3, width/3, height/3));
+
+  // walls.pushs(new Boundary(0, 0, width, 0));
+  // walls.push(new Boundary(width, 0, width, height));
+  // walls.push(new Boundary(width, height, 0, height));
+  // walls.push(new Boundary(0, height, 0, 0));
+
+  background(0);
+  player.raycast();
 }
-
+let count = 0;
+let animTimer = true;
 function draw() {
   background(0);
+  player.rotate(0.2);
+  if (animTimer == true) {
+    player.pos.x ++;
+  } else {
+    player.pos.x --;
+  }
+  if (player.pos.x > 600) {
+    animTimer = false;
+  }
+  if (player.pos.x < 400) {
+    animTimer = true;
+  }
+  console.log(round(frameRate()));
+  player.raycast();
+
+  sliders();
   getKeyInputs();
-  player.show();
+  drawing.start();
 
-  for (let wall of walls) {
-    wall.show();
-  }
-
-  if (!isDrawing) {
-    p1 = [mouseX, mouseY];
-  }
-  if (mouseIsPressed) {
-    isDrawing = true;
-    stroke(255);
-    line(p1[0],p1[1], mouseX, mouseY);
-  }
-
-  // walls[0].setAngle(walls[0].rotsation += radians(1));
 }
 
-function getKeyInputs() {
-  player.setFOV(fovSlider.value());
-  let rotStep = rotateSlider.value();
-  let step = stepSlider.value();
-  // rayLength = rayLengthSlider.value();
 
+function getKeyInputs() {
   if (keyIsDown(LEFT_ARROW)) {
     player.rotate(-rotStep);
   }
@@ -85,18 +97,145 @@ function getKeyInputs() {
   if (keyIsDown(68)) { // D
     player.sideMove(step);
   }
+  if (keyIsDown(17) && keyIsDown(90) && !keyIsDown(16)) { //control-Z
+    undoTime ++;
+    if (undoTime % 15 == 0 || undoTime == 1 && walls.length > 0) {
+      deleted.push(walls.pop());
+    }
+  } else {
+    undoTime = 0;
+  }
+
+  if (keyIsDown(17) && keyIsDown(90) && keyIsDown(16)) { //control-shift-Z
+    redoTime ++;
+    if (redoTime % 15 == 0 || redoTime == 1 && deleted.length > 0) {
+      walls.push(deleted.pop());
+    }
+  } else {
+    redoTime = 0;
+  }
 }
+function sliders() {
+  // player.setFOV(fovSlider.value());
+  rotStep = rotateSlider.value();
+  step = stepSlider.value();
+  // rayLength = rayLengthSlider.value();
+}
+
+let mode = 'line';
 
 function mouseReleased() {
   document.activeElement.blur();
-  // console.log(isDrawing);
+
+  if (!(mouseX < width +100 && mouseX > -100 && mouseY < height +100 && mouseY > -100)) {
+    isDrawing = false;
+    return;
+  }
   if (isDrawing) {
     isDrawing = false;
-    walls.push(new Boundary(p1[0], p1[1], mouseX, mouseY));
-    if (abs(walls[walls.length - 1].length) < 5) {
-      walls.pop();
+
+    if (mode !== 'line' && (abs(mouseX - p1.x) < 10 || abs(mouseY - p1.y) < 10)) {
+      return;
     }
+    if (mode == 'rect') {
+      walls.push(new Boundary(p1.x, p1.y, mouseX, p1.y));
+      walls.push(new Boundary(mouseX, p1.y, mouseX, mouseY));
+      walls.push(new Boundary(p1.x, mouseY, mouseX, mouseY));
+      walls.push(new Boundary(p1.x, mouseY, p1.x, p1.y));
+    }
+    if (mode == 'line') {
+      walls.push(new Boundary(p1.x, p1.y, mouseX, mouseY));
+    }
+
+    if (mode == 'tri') {
+      walls.push(new Boundary(p1.x, p1.y, mouseX, p1.y));
+      walls.push(new Boundary(mouseX, p1.y, (mouseX + p1.x)/2, mouseY));
+      walls.push(new Boundary((mouseX + p1.x)/2, mouseY, p1.x, p1.y));
+    }
+
+
+    drawing.removeLast();
   }
 }
 
 
+
+
+
+
+let drawing = {
+  start() {
+    if (!isDrawing) {
+      if (mouseX < width && mouseX > 0 && mouseY < height && mouseY > 0) {
+        p1.x = mouseX;
+        p1.y = mouseY;
+      } else {
+        return;
+      }
+    }
+    if (mouseIsPressed &&
+        (mouseX < width +100 && mouseX > -100 && mouseY < height +100 && mouseY > -100)) {
+      isDrawing = true;
+      stroke(255);
+      if (keyIsDown(16)) {
+        this.snapping();
+      }
+      line(p1.x,p1.y, mouseX, mouseY);
+
+      if (mode == 'rect') {
+        rectMode(CORNERS);
+        rect(p1.x, p1.y, mouseX, mouseY);
+      }
+      if (mode == 'tri') {
+        triangle(p1.x, p1.y, mouseX, p1.y, (mouseX + p1.x)/2, mouseY);
+      }
+    }
+  },
+  removeLast() {
+    if (abs(mouseX - p1.x) < 10 && abs(mouseY - p1.y) < 10) {
+      walls.pop();
+      if (mode == 'rect') {
+        walls.pop();
+        walls.pop();
+        walls.pop();
+      } else if (mode == 'tri') {
+        walls.pop();
+        walls.pop();
+      }
+    }
+  },
+  snapping() {
+    if (mode == 'line') {
+      if (abs(mouseX - p1.x) < 10 && mode == 'line') {
+        mouseX = p1.x;
+      }
+      if (abs(mouseY - p1.y) < 10 && mode == 'line') {
+        mouseY = p1.y;
+      }
+    }
+    if (mode == 'rect') {
+      if (mouseX - p1.x < 30 && mouseX - p1.x > 0) {
+        mouseX = p1.x + 10;
+      }
+      if (mouseX - p1.x > -30 && mouseX - p1.x < 0) {
+        mouseX = p1.x - 10;
+      }
+      if (mouseY - p1.y < 30 && mouseY - p1.y > 0) {
+        mouseY = p1.y + 10;
+      }
+      if (mouseY - p1.y > -30 && mouseY - p1.y < 0) {
+        mouseY = p1.y - 10;
+      }
+    }
+  }
+};
+
+
+
+
+
+  // if (walls.length > 0) {
+  //   for (let i in walls) {
+  //     walls[i].setAngle(walls[i].rotation += radians(1));
+  //   }
+  // }

@@ -7,12 +7,14 @@ class Player {
     this.unitV.setMag(50);
 
     this.rays = [];
+    this.FOV = 120;
+    this.resolution = 1;
+    this.prevFOV = this.FOV;
 
-    // this.rays.push(new Ray(this.pos, this.rotation));
-
-    for (let angle = -FOV/2; angle < FOV/2; angle += 0.5) {
+    for (let angle = -this.FOV/2; angle < this.FOV/2; angle += this.resolution) {
       this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
     }
+    // this.rays.push(new Ray(this.pos, this.rotation));
   }
 
   show() {
@@ -25,21 +27,39 @@ class Player {
     strokeWeight(1);
     line(0,0, this.unitV.x, this.unitV.y);
     pop();
+  }
 
-    for (let ray of this.rays) {
+
+  raycast() {
+    count = 0;
+    this.rays.forEach((ray, index) => {
       for (let wall of walls) {
-        let cross = ray.cast(wall);
-        if (cross) {
-          ray.intersections.push(cross);
-        }
+        ray.cast(wall);
+        wall.show();
       }
-      if (ray.intersections.length > 1) {
-        console.log("bork longer");
-      }
-
+      ray.sort();
       ray.show();
-      ray.intersections = [];
+      player.display(ray, index);
+    });
+    // console.log(count);
+  }
+
+  display(ray, index) { //TODO: Find function for dist en fonction de height
+    index = this.FOV/this.resolution - index;
+    if (!ray.crossings[0]){
+      return;
     }
+    let a = -height/rayLength;
+    for (let crossing of ray.crossings) {
+      let h = a*crossing.dist + rayLength*-a;
+      let w = width/(this.FOV/this.resolution);
+      if (h > 0) {
+        noStroke();
+        fill(255, 0, 0, 255);
+        rect(width-index*w, height/2 - h/2, w, h);
+      }
+    }
+    ray.crossings = [];
   }
 
 
@@ -73,12 +93,12 @@ class Player {
   }
 
   setFOV(newFOV) {
-    if (FOV !== newFOV) {
+    if (this.FOV!== newFOV) {
       this.rays = [];
       for (let angle = -newFOV/2; angle < newFOV/2; angle += 1) {
         this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
       }
-      FOV = newFOV;
+      this.FOV= newFOV;
     }
   }
 }
