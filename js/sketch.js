@@ -1,5 +1,5 @@
 let player;
-let rayLength = 500;
+let rayLength = 1000;
 let rotStep;
 let step;
 
@@ -11,12 +11,16 @@ let redoTime = 0;
 let isDrawing = false;
 let p1 = {};
 
+let show2d = true;
+let show3d = true;
+let showcase = false;
+
 
 
 let rotateSlider, stepSlider;
 
 function setup() {
-  let canvas = createCanvas(900, 400);
+  let canvas = createCanvas(800, 600);
   canvas.parent("canvas1");
 
   rotateSlider = createSlider(1, 9, 3, 0.5);
@@ -27,9 +31,9 @@ function setup() {
   stepSlider.parent("canvas1");
   stepSlider.style('width', '80px');
 
-  fovSlider = createSlider(2, 365, 1, 5);
-  fovSlider.parent("canvas1");
-  fovSlider.style('width', '80px');
+  // fovSlider = createSlider(2, 365, 1, 5);
+  // fovSlider.parent("canvas1");
+  // fovSlider.style('width', '80px');
 
   // rayLengthSlider = createSlider(1, 500, 190, 10);
   // rayLengthSlider.parent("canvas1");
@@ -39,16 +43,12 @@ function setup() {
 
   // walls.push(new Boundary(width-width/3, height/2-50, width-width/2, height/2+50));
 
-  // walls.push(new Boundary(width/3, height/3, width - width/3, height/3));
-  // walls.push(new Boundary(width - width/3, height/3, width - width/3, height - height/3));
-  // walls.push(new Boundary(width/3, height - height/3, width - width/3, height - height/3));
-  // walls.push(new Boundary(width/3, height - height/3, width/3, height/3));
 
   // walls.pushs(new Boundary(0, 0, width, 0));
   // walls.push(new Boundary(width, 0, width, height));
   // walls.push(new Boundary(width, height, 0, height));
   // walls.push(new Boundary(0, height, 0, 0));
-
+  readyWalls();
   background(0);
   player.raycast();
 }
@@ -56,26 +56,48 @@ let count = 0;
 let animTimer = true;
 function draw() {
   background(0);
-  player.rotate(0.2);
-  if (animTimer == true) {
-    player.pos.x ++;
-  } else {
-    player.pos.x --;
+  if (showcase) {
+    player.rotate(0.2);
+    if (animTimer == true) {
+      player.pos.x ++;
+    } else {
+      player.pos.x --;
+    }
+    if (player.pos.x > 600) {
+      animTimer = false;
+    }
+    if (player.pos.x < 400) {
+      animTimer = true;
+    }
   }
-  if (player.pos.x > 600) {
-    animTimer = false;
-  }
-  if (player.pos.x < 400) {
-    animTimer = true;
-  }
-  console.log(round(frameRate()));
   player.raycast();
 
   sliders();
   getKeyInputs();
   drawing.start();
-
+  drawing.displayTool();
 }
+
+function readyWalls() {
+  walls.push(new Boundary(522, 81, 563, 171));
+  walls.push(new Boundary(678, 329, 642, 471));
+  walls.push(new Boundary(205, 359, 294, 464));
+  walls.push(new Boundary(220, 70, 100, 300));
+  // walls.push(new Boundary(398, 550, 510, 457));
+  // walls.push(new Boundary(327, 42, 431, 183));
+}
+
+function toggleRes() {
+  if (player.resolution == 1) {
+    player.resolution = 0.5;
+    document.getElementById('res').innerText = 'Show higher resolution';
+  } else {
+    player.resolution = 1;
+    document.getElementById('res').innerText = 'Show lower resolution';
+  }
+  player.setFOV(player.FOV);
+}
+
 
 
 function getKeyInputs() {
@@ -116,7 +138,6 @@ function getKeyInputs() {
   }
 }
 function sliders() {
-  // player.setFOV(fovSlider.value());
   rotStep = rotateSlider.value();
   step = stepSlider.value();
   // rayLength = rayLengthSlider.value();
@@ -138,10 +159,16 @@ function mouseReleased() {
       return;
     }
     if (mode == 'rect') {
-      walls.push(new Boundary(p1.x, p1.y, mouseX, p1.y));
-      walls.push(new Boundary(mouseX, p1.y, mouseX, mouseY));
-      walls.push(new Boundary(p1.x, mouseY, mouseX, mouseY));
-      walls.push(new Boundary(p1.x, mouseY, p1.x, p1.y));
+      // console.log(walls);
+      walls.push(new Boundary(width/3, height/3, width - width/3, height/3));
+      walls.push(new Boundary(width - width/3, height/3, width - width/3, height - height/3));
+      walls.push(new Boundary(width/3, height - height/3, width - width/3, height - height/3));
+      walls.push(new Boundary(width/3, height - height/3, width/3, height/3));
+      // console.log(walls);
+      // walls.push(new Boundary(p1.x, p1.y, mouseX, p1.y));
+      // walls.push(new Boundary(mouseX, p1.y, mouseX, mouseY));
+      // walls.push(new Boundary(p1.x, mouseY, mouseX, mouseY));
+      // walls.push(new Boundary(p1.x, mouseY, p1.x, p1.y));
     }
     if (mode == 'line') {
       walls.push(new Boundary(p1.x, p1.y, mouseX, mouseY));
@@ -180,11 +207,14 @@ let drawing = {
       if (keyIsDown(16)) {
         this.snapping();
       }
-      line(p1.x,p1.y, mouseX, mouseY);
-
+      if (mode == 'line') {
+        line(p1.x,p1.y, mouseX, mouseY);
+      }
       if (mode == 'rect') {
-        rectMode(CORNERS);
-        rect(p1.x, p1.y, mouseX, mouseY);
+        push();
+          rectMode(CORNERS);
+          rect(p1.x, p1.y, mouseX, mouseY);
+        pop();
       }
       if (mode == 'tri') {
         triangle(p1.x, p1.y, mouseX, p1.y, (mouseX + p1.x)/2, mouseY);
@@ -227,6 +257,37 @@ let drawing = {
         mouseY = p1.y - 10;
       }
     }
+    for (let wall of walls) {
+      if (abs(mouseX - wall.pos.x) < 10 && abs(mouseY - wall.pos.y) < 10) {
+        mouseX = wall.pos.x;
+        mouseY = wall.pos.y;
+      }
+      if (abs(mouseX - wall.pos2.x) < 10 && abs(mouseY - wall.pos2.y) < 10) {
+        mouseX = wall.pos2.x;
+        mouseY = wall.pos2.y;
+      }
+    }
+  },
+  displayTool() {
+    push();
+      strokeWeight(2);
+      fill(255);
+      rect(0, 0, 50, 50);
+    pop();
+    push();
+      fill(color('green'));
+      stroke(0);
+      strokeWeight(2);
+      if (mode == 'line') {
+        line(10, 25, 40, 25);
+      }
+      if (mode == 'rect') {
+        rect(10, 10, 30, 30);
+      }
+      if (mode == 'tri') {
+        triangle(10, 40, 25, 10, 40, 40);
+      }
+    pop();
   }
 };
 

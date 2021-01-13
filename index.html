@@ -20,10 +20,27 @@
 
 </head>
 <body>
-  <label>Raycasting V2</label>
-  <div id="canvas1"></div>
-  <button onclick="mode = 'line'">line</button>
-  <button onclick="mode = 'rect'">rectangle</button>
-  <button onclick="mode = 'tri'">triangle</button>
+  <div id="canvas1">W A S D to move
+                <br>Arrow keys to look left/right
+                <br>Drag mouse to draw new walls (shift to snap)
+  </div>
+  <div id='controls'>
+    <label>Raycasting V2</label>
+    <div>
+      <button onclick="mode = 'line'">line</button>
+      <button onclick="mode = 'rect'">rectangle</button>
+      <button onclick="mode = 'tri'">triangle</button>
+    </div>
+    <br>
+    <div>
+      <button onclick='showcase = !showcase'>Toggle automatic movement</button>
+      <button onclick='show2d = !show2d'>hide/show 2d level</button>
+      <button onclick='show3d = !show3d'>hide/show 3d level</button>
+    </div>
+    <br>
+    <div>
+      <button id='res' onclick='toggleRes()'>Show higher resolution</button>
+    </div>
+  </div>
 </body>
 </html>

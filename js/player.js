@@ -7,7 +7,7 @@ class Player {
     this.unitV.setMag(50);
 
     this.rays = [];
-    this.FOV = 120;
+    this.FOV = 90;
     this.resolution = 1;
     this.prevFOV = this.FOV;
 
@@ -32,14 +32,30 @@ class Player {
 
   raycast() {
     count = 0;
+    if (!show2d && show3d) {
+      push();
+        noStroke();
+        fill(150, 150, 150);
+        rect(0, height/2, width, height/2);
+        fill(100, 167, 255);
+        rect(0, 0, width, height/2);
+      pop();
+    }
     this.rays.forEach((ray, index) => {
       for (let wall of walls) {
         ray.cast(wall);
-        wall.show();
+        if(show2d) {
+          wall.show();
+        }
       }
       ray.sort();
-      ray.show();
-      player.display(ray, index);
+      if (show2d) {
+        ray.show();
+      }
+      if (show3d) {
+        player.display(ray, index);
+      }
+      ray.crossings = [];
     });
     // console.log(count);
   }
@@ -49,17 +65,18 @@ class Player {
     if (!ray.crossings[0]){
       return;
     }
-    let a = -height/rayLength;
-    for (let crossing of ray.crossings) {
-      let h = a*crossing.dist + rayLength*-a;
-      let w = width/(this.FOV/this.resolution);
-      if (h > 0) {
-        noStroke();
-        fill(255, 0, 0, 255);
-        rect(width-index*w, height/2 - h/2, w, h);
-      }
+    let curr = ray.crossings[0];
+    let a = -height*1.2/rayLength;
+    // for (let crossing of ray.crossings) {
+    let h = a*curr.dist + rayLength*-a;
+    let w = width/(this.FOV/this.resolution);
+    if (h > 0) {
+      push();
+      stroke(255, 0, 0);
+      fill(255, 0, 0);
+      rect(width-index*w, height/2 - h/2, w, h);
+      pop();
     }
-    ray.crossings = [];
   }
 
 
@@ -93,13 +110,13 @@ class Player {
   }
 
   setFOV(newFOV) {
-    if (this.FOV!== newFOV) {
-      this.rays = [];
-      for (let angle = -newFOV/2; angle < newFOV/2; angle += 1) {
-        this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
-      }
-      this.FOV= newFOV;
+    // if (this.FOV!== newFOV) {
+    this.rays = [];
+    for (let angle = -newFOV/2; angle < newFOV/2; angle += this.resolution) {
+      this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
     }
+    this.FOV = newFOV;
+    // }
   }
 }
 
