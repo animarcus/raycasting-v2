@@ -7,12 +7,14 @@ class Player {
     this.unitV.setMag(50);
 
     this.rays = [];
+    this.rayLength = 1000;
+
     this.FOV = 90;
     this.resolution = 1;
     this.prevFOV = this.FOV;
 
     for (let angle = -this.FOV/2; angle < this.FOV/2; angle += this.resolution) {
-      this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
+      this.rays.push(new Ray(this.pos, this.rotation + radians(angle), this.rayLength));
     }
     // this.rays.push(new Ray(this.pos, this.rotation));
   }
@@ -66,14 +68,26 @@ class Player {
       return;
     }
     let curr = ray.crossings[0];
-    let a = -height*1.2/rayLength;
+    let a = -height*1.2/this.rayLength;
     // for (let crossing of ray.crossings) {
-    let h = a*curr.dist + rayLength*-a;
+    let h = a*curr.dist*cos(ray.rotation/2) + this.rayLength*-a;
     let w = width/(this.FOV/this.resolution);
     if (h > 0) {
-      push();
-      stroke(255, 0, 0);
-      fill(255, 0, 0);
+      let value;
+      let limit = 4;
+      if (curr.dist < this.rayLength/limit) {
+        value = 1;
+      } else {
+        a = 1/(this.rayLength/limit - this.rayLength);
+        let b = 1 - a*this.rayLength/limit;
+        value = a*curr.dist + b;
+      }
+      //  Color is in Hue Saturation Brightness (HSB)
+      // console.log(value);
+      push();             //  Brightness is determined by distance
+      colorMode(HSB);
+      stroke(curr.color.hue, curr.color.sat, curr.color.bri*value);
+      fill(curr.color.hue, curr.color.sat, curr.color.bri*value);
       rect(width-index*w, height/2 - h/2, w, h);
       pop();
     }
@@ -113,7 +127,7 @@ class Player {
     // if (this.FOV!== newFOV) {
     this.rays = [];
     for (let angle = -newFOV/2; angle < newFOV/2; angle += this.resolution) {
-      this.rays.push(new Ray(this.pos, this.rotation + radians(angle)));
+      this.rays.push(new Ray(this.pos, this.rotation + radians(angle), this.rayLength));
     }
     this.FOV = newFOV;
     // }
@@ -134,38 +148,3 @@ function drawArrow(base, vec, myColor) {
   triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
   pop();
 }
-
-// constructor(x, y, rotation=0) {
-//   this.x = x;
-//   this.y = y;
-//   this.dir = rotation;
-//   this.pos = createVector(x, y);
-//   this.tip = p5.Vector.fromAngle(-rotation);
-//   this.tip.setMag(50);
-// }
-
-// show() {
-//   push();
-//   this.tip.setMag(50);
-//   translate(this.pos.x, this.pos.y);
-//   stroke(255);
-//   strokeWeight(1);
-//   line(0,0, this.tip.x, this.tip.y);
-//   pop();
-//   for (let ray of rays) {
-//     ray.show();
-//   }
-// }
-
-// setAngle(angle) {
-//   this.tip = p5.Vector.fromAngle(angle);
-// }
-
-// rotate(angle) {
-//   let rot = radians(angle);
-//   this.dir = this.dir + rot;
-//   this.setAngle(this.dir);
-//   for (let ray of rays) {
-//     ray.setAngle(ray.dir + rot);
-//   }
-// }

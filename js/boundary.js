@@ -9,8 +9,10 @@ class Boundary {
 
     this.pos = createVector(x, y);
     this.pos2 = this.setAngle(-this.rotation);
-    // console.log(x, y, x2, y2);
-    // console.log(this.length, this.rotation);
+
+    this.hue = 100;
+    this.sat = 100;
+    this.bri = 100;
   }
   show() {
     push();

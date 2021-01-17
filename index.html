@@ -27,21 +27,24 @@
                 <br>
   </div>
   <div id='controls'>
-    
+
     <div>
       <button onclick="mode = 'line'">line</button>
       <button onclick="mode = 'rect'">rectangle</button>
       <button onclick="mode = 'tri'">triangle</button>
+      <br>
+      <button onclick="walls = []">clear walls</button>
     </div>
     <br>
     <div>
       <button onclick='showcase = !showcase'>Toggle automatic movement</button>
+      <br>
       <button onclick='show2d = !show2d'>hide/show 2d level</button>
       <button onclick='show3d = !show3d'>hide/show 3d level</button>
     </div>
     <br>
     <div>
-      <button id='res' onclick='toggleRes()'>Show higher resolution</button>
+      <button id='res' onclick='toggleRes()'>Resolution: 1</button>
     </div>
   </div>
 </body>

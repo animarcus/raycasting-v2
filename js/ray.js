@@ -1,10 +1,11 @@
 class Ray {
-  constructor(pos, angle) {
+  constructor(pos, angle, rayLength) {
     this.pos = pos;
     this.rotation = angle;
+    this.rayLength = rayLength;
 
     this.unitV = p5.Vector.fromAngle(this.rotation);
-    this.unitV.setMag(rayLength);
+    this.unitV.setMag(this.rayLength);
 
     this.crossings = [];
     this.isCrossing = false;
@@ -24,23 +25,35 @@ class Ray {
     this.showCrossings();
   }
   showCrossings() {
-    if (this.crossings.length == 0) {
+    if (this.crossings.length < 1) {
       return;
     }
-    count += 1;
-    for (let cross of this.crossings) { //show all crossing
-      push();
-        stroke(color("blue"));
-        strokeWeight(5);
-        point(cross.x, cross.y);
-        strokeWeight(2);
-        // line(cross.x, cross.y, this.pos.x, this.pos.y);
-      pop();
-    }
+    // count += 1;
+    // for (let cross of this.crossings) { //show all crossing
+    push();
+      stroke(color("blue"));
+      strokeWeight(5);
+      // point(cross.x, cross.y);
+      strokeWeight(2);
+      line(this.crossings[0].x, this.crossings[0].y, this.pos.x, this.pos.y);
+    pop();
+    // }
   }
 
   sort() {
-    //
+    if (this.crossings.length > 1) {
+      let i = 1;
+      while (i < this.crossings.length) {
+          let x = this.crossings[i];
+          let j = i - 1;
+          while (j >= 0 && this.crossings[j].dist > x.dist) {
+              this.crossings[j+1] = this.crossings[j];
+              j = j - 1;
+          }
+          this.crossings[j+1] = x;
+          i = i + 1;
+      }
+    }
   }
 
   updatePOS() {
@@ -49,14 +62,14 @@ class Ray {
   setAngle(angle) {
     this.rotation = angle;
     this.unitV = p5.Vector.fromAngle(angle);
-    this.unitV.setMag(rayLength);
+    this.unitV.setMag(this.rayLength);
   }
 
   cast(wall) {
     // if (this.crossings.length > 0) {
     //   this.crossings.pop();
     // }
-    this.unitV.setMag(rayLength);
+    this.unitV.setMag(this.rayLength);
 
 
     let x1 = this.pos.x;
@@ -85,7 +98,12 @@ class Ray {
               this.crossings.push({ 'x': round(xint),
                                     'y': round(yint),
                                     // 'dist': sqrt()
-                                    'dist': sqrt((y1 - yint)**2 + (x1 - xint)**2)
+                                    'dist': sqrt((y1 - yint)**2 + (x1 - xint)**2),
+                                    'color': {
+                                      'hue': wall.hue,
+                                      'sat': wall.sat,
+                                      'bri': wall.bri
+                                    }
                                   });
             }
       }

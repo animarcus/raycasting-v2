@@ -21,15 +21,27 @@ body {
   /* border-radius: 50%; */
 }
 
-
-#canvas1 {
-  /* display: flex;
-  place-content: center; */
-  /* position: absolute; */
-  /* top:50%;
-  left:50%;
-  transform: translate(-50%,-50%); */
-  /* display: flex;
-  flex-direction: column; */
+@media (min-width: 300px) and (max-width: 600px) {
+  body {
+    overflow: hidden;
+    transform: scale(0.5);
+    transform-origin: left;
+  }
 }
 
+
+
+.sliderClass {
+  display: flex;
+  flex-direction: row;
+  padding: 0px 100px 0px 0px;
+}
+
+#sliders {
+  display: flex;
+  flex-direction: row;
+}
+
+#res {
+  min-width: 150px;
+}

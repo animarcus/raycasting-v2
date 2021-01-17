@@ -1,5 +1,4 @@
 let player;
-let rayLength = 1000;
 let rotStep;
 let step;
 
@@ -23,13 +22,35 @@ function setup() {
   let canvas = createCanvas(800, 600);
   canvas.parent("canvas1");
 
-  rotateSlider = createSlider(1, 9, 3, 0.5);
-  rotateSlider.parent("canvas1");
-  rotateSlider.style('width', '80px');
+  let mainDiv = document.getElementById("canvas1");
 
-  stepSlider = createSlider(1, 10, 3, 1);
-  stepSlider.parent("canvas1");
-  stepSlider.style('width', '80px');
+  let slidersDiv = document.createElement('div');
+  slidersDiv.id = 'sliders';
+  mainDiv.appendChild(slidersDiv);
+
+  let rotateDiv = document.createElement('div');
+    rotateDiv.id = 'rotate';
+    rotateDiv.className = 'sliderClass';
+    slidersDiv.appendChild(rotateDiv);
+    rotateSlider = createSlider(1, 9, 3, 0.5);
+    rotateSlider.parent(rotateDiv);
+    rotateSlider.style('width', '80px');
+
+  let bork = document.createElement('p');
+    bork.innerText = 'AAAAAHHHHH';
+    rotateDiv.appendChild(bork);
+
+  let stepDiv = document.createElement('div');
+    stepDiv.id = 'step';
+    stepDiv.className = 'sliderClass';
+    slidersDiv.appendChild(stepDiv);
+    stepSlider = createSlider(1, 10, 3, 1);
+    stepSlider.parent(stepDiv);
+    stepSlider.style('width', '80px');
+
+  let pork = document.createElement('p');
+    pork.innerText = 'BHHHHHHHH';
+    stepDiv.appendChild(pork);
 
   // fovSlider = createSlider(2, 365, 1, 5);
   // fovSlider.parent("canvas1");
@@ -74,8 +95,10 @@ function draw() {
 
   sliders();
   getKeyInputs();
-  drawing.start();
-  drawing.displayTool();
+  if (!(!show2d && show3d)) {
+    drawing.start();
+    drawing.displayTool();
+  }
 }
 
 function readyWalls() {
@@ -83,17 +106,44 @@ function readyWalls() {
   walls.push(new Boundary(678, 329, 642, 471));
   walls.push(new Boundary(205, 359, 294, 464));
   walls.push(new Boundary(220, 70, 100, 300));
-  // walls.push(new Boundary(398, 550, 510, 457));
-  // walls.push(new Boundary(327, 42, 431, 183));
+
+
+
+  // walls.push(new Boundary(549, 172, 549, 214));
+  // walls.push(new Boundary(435, 237, 435, 269));
+  // walls.push(new Boundary(361, 291, 361, 346));
+  // walls.push(new Boundary(299, 360, 299, 410));
+  // walls.push(new Boundary(190, 405, 190, 438));
+  // walls.push(new Boundary(45, 337, 47, 349));
+  // walls.push(new Boundary(395, 39, 395, 39));
+  // walls.push(new Boundary(626, 130, 626, 86));
+  // walls.push(new Boundary(795, 39, 795, 3));
 }
 
-function toggleRes() {
+
+
+function toggleRes(step) {
   if (player.resolution == 1) {
     player.resolution = 0.5;
-    document.getElementById('res').innerText = 'Show higher resolution';
-  } else {
+    document.getElementById('res').innerText = 'Resolution: 0.5';
+  } else if (player.resolution == 0.5) {
+    player.resolution = 0.2;
+    document.getElementById('res').innerText = 'Resolution: 0.2';
+  } else if (player.resolution == 0.2) {
+    player.resolution = 0.1;
+    document.getElementById('res').innerText = 'Resolution: 0.1';
+  } else if (player.resolution == 0.1) {
+    player.resolution = 10;
+    document.getElementById('res').innerText = 'Resolution: 10';
+  } else if (player.resolution == 10) {
+    player.resolution = 5;
+    document.getElementById('res').innerText = 'Resolution: 5';
+  } else if (player.resolution == 5) {
+    player.resolution = 2;
+    document.getElementById('res').innerText = 'Resolution: 2';
+  } else if (player.resolution == 2) {
     player.resolution = 1;
-    document.getElementById('res').innerText = 'Show lower resolution';
+    document.getElementById('res').innerText = 'Resolution: 1';
   }
   player.setFOV(player.FOV);
 }
@@ -140,7 +190,7 @@ function getKeyInputs() {
 function sliders() {
   rotStep = rotateSlider.value();
   step = stepSlider.value();
-  // rayLength = rayLengthSlider.value();
+  // player.rayLength = rayLengthSlider.value();
 }
 
 let mode = 'line';
@@ -160,15 +210,15 @@ function mouseReleased() {
     }
     if (mode == 'rect') {
       // console.log(walls);
-      walls.push(new Boundary(width/3, height/3, width - width/3, height/3));
-      walls.push(new Boundary(width - width/3, height/3, width - width/3, height - height/3));
-      walls.push(new Boundary(width/3, height - height/3, width - width/3, height - height/3));
-      walls.push(new Boundary(width/3, height - height/3, width/3, height/3));
+      // walls.push(new Boundary(width/3, height/3, width - width/3, height/3));
+      // walls.push(new Boundary(width - width/3, height/3, width - width/3, height - height/3));
+      // walls.push(new Boundary(width/3, height - height/3, width - width/3, height - height/3));
+      // walls.push(new Boundary(width/3, height - height/3, width/3, height/3));
       // console.log(walls);
-      // walls.push(new Boundary(p1.x, p1.y, mouseX, p1.y));
-      // walls.push(new Boundary(mouseX, p1.y, mouseX, mouseY));
-      // walls.push(new Boundary(p1.x, mouseY, mouseX, mouseY));
-      // walls.push(new Boundary(p1.x, mouseY, p1.x, p1.y));
+      walls.push(new Boundary(p1.x, p1.y, mouseX, p1.y));
+      walls.push(new Boundary(mouseX, p1.y, mouseX, mouseY));
+      walls.push(new Boundary(p1.x, mouseY, mouseX, mouseY));
+      walls.push(new Boundary(p1.x, mouseY, p1.x, p1.y));
     }
     if (mode == 'line') {
       walls.push(new Boundary(p1.x, p1.y, mouseX, mouseY));
