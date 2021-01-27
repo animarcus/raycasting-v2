@@ -12,7 +12,8 @@ let p1 = {};
 
 let show2d = true;
 let show3d = true;
-let showcase = false;
+let showcase = true;
+
 
 
 
@@ -60,36 +61,43 @@ function setup() {
   // rayLengthSlider.parent("canvas1");
   // rayLengthSlider.style('width', '80px');
 
-  player = new Player(width/2, height/2, 0);
+  player = new Player(width/2, height/2, PI);
+  // player.setAngle(PI)
 
   // walls.push(new Boundary(width-width/3, height/2-50, width-width/2, height/2+50));
 
 
-  // walls.pushs(new Boundary(0, 0, width, 0));
+  walls.push(new Boundary(width/2-50, height/2, width/2+50, height/2));
   // walls.push(new Boundary(width, 0, width, height));
   // walls.push(new Boundary(width, height, 0, height));
   // walls.push(new Boundary(0, height, 0, 0));
-  readyWalls();
+  // readyWalls();
   background(0);
+
+  player.setAngle(PI);
   player.raycast();
 }
 let count = 0;
-let animTimer = true;
+
+let animRot = 0;
+let animDist = 350;
+
 function draw() {
   background(0);
   if (showcase) {
-    player.rotate(0.2);
-    if (animTimer == true) {
-      player.pos.x ++;
+    if (animRot < 360) {
+      animRot ++;
     } else {
-      player.pos.x --;
+      animRot = 0;
     }
-    if (player.pos.x > 600) {
-      animTimer = false;
-    }
-    if (player.pos.x < 400) {
-      animTimer = true;
-    }
+    // let x = cos(radians(animTimer))*r + width/2;
+    // let y = sin(radians(animTimer))*r + height/2;
+    // ellipse(x, y, 20);
+    player.pos.x = cos(radians(animRot))*animDist + width/2;
+    player.pos.y = sin(radians(animRot))*animDist + height/2;
+    // player.rotation = radians(animTimer) + Math.PI;
+    player.setAngle(radians(animRot) + Math.PI);
+    // console.log(radians(animTimer));
   }
   player.raycast();
 
@@ -97,7 +105,7 @@ function draw() {
   getKeyInputs();
   if (!(!show2d && show3d)) {
     drawing.start();
-    drawing.displayTool();
+    // drawing.displayTool();
   }
 }
 

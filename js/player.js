@@ -20,7 +20,7 @@ class Player {
   }
 
   show() {
-    // drawArrow(this.pos, this.unitV, "white");
+    drawArrow(this.pos, this.unitV, "white");
     push();
     translate(this.pos.x, this.pos.y);
     stroke(255);
@@ -70,11 +70,11 @@ class Player {
     let curr = ray.crossings[0];
     let a = -height*1.2/this.rayLength;
     // for (let crossing of ray.crossings) {
-    let h = a*curr.dist*cos(ray.rotation/2) + this.rayLength*-a;
+    let h = (a*curr.dist + this.rayLength*-a);
     let w = width/(this.FOV/this.resolution);
     if (h > 0) {
       let value;
-      let limit = 4;
+      let limit = 3;
       if (curr.dist < this.rayLength/limit) {
         value = 1;
       } else {
@@ -98,17 +98,18 @@ class Player {
     this.rotation = angle;
     this.unitV = p5.Vector.fromAngle(angle);
     this.unitV.setMag(50);
-
+    let i = 0;
+    for (let angle = -this.FOV/2; angle < this.FOV/2; angle += this.resolution) {
+      this.rays[i].setAngle(this.rotation + radians(angle));
+      i ++;
+    }
+    // this.setFOV(this.FOV);
   }
 
   rotate(angle) { // input is in degrees (easier to calculate step)
     angle = radians(angle);
     this.rotation += angle;
     this.setAngle(this.rotation);
-
-    for (let ray of this.rays) {
-      ray.setAngle(ray.rotation += angle);
-    }
   }
 
   fbMove(step) { // move forwards or backwards
@@ -118,8 +119,8 @@ class Player {
   }
 
   sideMove(step) {
-    let x = round(this.pos.x + cos(this.rotation + PI/2)*step);
-    let y = round(this.pos.y + sin(this.rotation + PI/2)*step);
+    let x = this.pos.x + cos(this.rotation + PI/2)*step;
+    let y = this.pos.y + sin(this.rotation + PI/2)*step;
     this.pos.set(x, y);
   }
 
