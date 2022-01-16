@@ -1,13 +1,18 @@
 class Boundary {
-  constructor(x, y, len = 50, rotation = 0) {
-    this.x = x;
-    this.y = y;
+  constructor(x, y, x2, y2) {
+    console.log(round(x), round(y), round(x2), round(y2));
+    this.length = sqrt(sq(x2 - x) + sq(y2 - y));
+    if (x2 < x) {
+      this.length = -this.length;
+    }
+    this.rotation = atan((y2 - y)/(x2 - x));
 
-    this.rotation = -rotation;
-    this.length = len;
+    this.pos = createVector(x, y);
+    this.pos2 = this.setAngle(-this.rotation);
 
-    this.pos = createVector(this.x, this.y);
-    this.setAngle(-this.rotation);
+    this.hue = 100;
+    this.sat = 100;
+    this.bri = 100;
   }
   show() {
     push();
@@ -24,6 +29,6 @@ class Boundary {
     angle = -angle;
     this.unitV = p5.Vector.fromAngle(angle);
     this.unitV.setMag(this.length);
-    this.pos2 = p5.Vector.add(this.pos, this.unitV);
+    return p5.Vector.add(this.pos, this.unitV);
   }
 }

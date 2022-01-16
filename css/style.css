@@ -12,21 +12,36 @@
 body {
   background: #f1c40f;
   height: 100%;
-  overflow-y: hidden;
-  overflow-x: hidden;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  place-content: center;
   /* border-radius: 50%; */
 }
 
-p {
-  position: absolute;
-  top:50%;
-  left:50%;
-  transform: translate(-50%,-50%);
+@media (min-width: 300px) and (max-width: 600px) {
+  body {
+    overflow: hidden;
+    transform: scale(0.5);
+    transform-origin: left;
+  }
 }
 
-#canvas1 {
-  position: absolute;
-  top:50%;
-  left:50%;
-  transform: translate(-50%,-50%);
+
+
+.sliderClass {
+  display: flex;
+  flex-direction: row;
+  padding: 0px 100px 0px 0px;
+}
+
+#sliders {
+  display: flex;
+  flex-direction: row;
+}
+
+#res {
+  min-width: 150px;
 }
